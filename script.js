@@ -3,14 +3,54 @@ let highScore = 0;
 let currentScore = 0;
 let num1;
 let num2;
+let operator;
+let setOperators = function () {
+  let arr = [];
+  $('.operator').each(function (index, operator) {
+    if ($(operator).prop('checked')) {
+      arr.push($(operator).parent().text());
+    }
+  })
+  return arr;
+}
+let setRandomOperator = function () {
+  let index = Math.floor(Math.random() * setOperators().length);
+  
+   operator = setOperators()[index];
+  
+}
+
+let performOperation = function (num1, num2) {
+  switch (operator) {
+    case '+':
+      return num1 + num2;
+    case '-':
+      return num1 - num2;
+    case '*':
+      return num1 * num2;
+    case '/':
+      return num1 / num2;
+  }
+
+}
+
 //generate new numbers
 let generateNumbers = function () {
+  
   num1 = Math.floor((Math.random() * 20));
   num2 = Math.floor((Math.random() * 20));
-  $('#problem').text(num1 + ' + ' + num2);
-  let answer = num1 + num2;
-  let nums = [num1, num2, answer];
-  return nums;
+if (operator === '-' && num1 < num2) {
+    generateNumbers();
+  }
+  else if (operator === '/' && num1 % num2 !== 0) {
+    generateNumbers();
+  }
+}
+let updateNumbers = function () {
+  setRandomOperator();
+  generateNumbers();
+  let answer = performOperation(num1, num2);
+  $('#problem').text(num1 + ' ' + operator + ' ' + num2);
 }
 let setScores = function () {
   $('#current-score').text(currentScore);
@@ -36,13 +76,12 @@ let startTimer = function () {
 
 }
 let onCorrectAnswer = function (first, second) {
-  console.log(parseInt($('input').val()) === (num1 + num2));
-  if (parseInt($('input').val()) === first + second) {
-    countdown += 2;
-    currentScore++;
-    setScores();
-    generateNumbers();
-    $('input').val('');
+  if (parseInt($('input').val()) === performOperation(first, second)) {
+  countdown += 2;
+  currentScore++;
+  setScores();
+  updateNumbers();
+  $('input').val('');
   }
 }
 let startGame = function () {
@@ -50,7 +89,7 @@ let startGame = function () {
   currentScore = 0;
   setScores();
   startTimer();
-  generateNumbers();
+  updateNumbers();
 }
 
 
