@@ -1,9 +1,17 @@
-let countdown = 10;
+let duration;
 let highScore = 0;
 let currentScore = 0;
 let num1;
 let num2;
 let operator;
+let gameEnded = true;
+let setMaxVal = function () {
+  let maxVal = $('#digit-select').val()
+  if (maxVal) {
+    return maxVal;
+  }
+  return 10;
+}
 let setOperators = function () {
   let arr = [];
   $('.operator').each(function (index, operator) {
@@ -15,9 +23,7 @@ let setOperators = function () {
 }
 let setRandomOperator = function () {
   let index = Math.floor(Math.random() * setOperators().length);
-  
-   operator = setOperators()[index];
-  
+  operator = setOperators()[index];
 }
 
 let performOperation = function (num1, num2) {
@@ -34,12 +40,12 @@ let performOperation = function (num1, num2) {
 
 }
 
-//generate new numbers
+
 let generateNumbers = function () {
-  
-  num1 = Math.floor((Math.random() * 20));
-  num2 = Math.floor((Math.random() * 20));
-if (operator === '-' && num1 < num2) {
+
+  num1 = Math.round((Math.random() * setMaxVal()));
+  num2 = Math.round((Math.random() * setMaxVal()));
+  if (operator === '-' && num1 < num2) {
     generateNumbers();
   }
   else if (operator === '/' && num1 % num2 !== 0) {
@@ -62,43 +68,49 @@ let setScores = function () {
 }
 let gameOver = function () {
   $('#problem').text('GAME OVER!');
+   gameEnded = true;
+  return gameEnded;
 }
-//start timer
+
 let startTimer = function () {
+  let startTime = Date.now();
+   duration = 10000;
   var timer = setInterval(function () {
-    --countdown;
-    $('#timer').text(countdown);
-    if (countdown <= 0) {
+    let elapsedTime = Date.now() - startTime;
+     remainingTime = duration - elapsedTime;
+    
+    $('#timer').text(Math.ceil(remainingTime/1000));
+    if (remainingTime <= 0) {
       clearInterval(timer);
       gameOver();
     }
-  }, 1000);
+  }, 200);
 
 }
+let addTime = function () {
+      duration += 1000;
+    }
 let onCorrectAnswer = function (first, second) {
   if (parseInt($('input').val()) === performOperation(first, second)) {
-  countdown += 2;
-  currentScore++;
-  setScores();
-  updateNumbers();
-  $('input').val('');
+    addTime();
+    currentScore++;
+    setScores();
+    updateNumbers();
+    $('form input').val('');
   }
 }
 let startGame = function () {
-  countdown = 10;
+  gameEnded = false;
   currentScore = 0;
   setScores();
   startTimer();
   updateNumbers();
 }
 
-
-
 $(document).ready(function () {
-
   $('form').on('submit', function (e) {
     e.preventDefault();
-    if (countdown === 10 || countdown <= 0) {
+    if (gameEnded) {
       startGame();
     }
     onCorrectAnswer(num1, num2);

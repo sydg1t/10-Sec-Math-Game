@@ -1,5 +1,5 @@
 body {
-  background-color: #010101;
+  background: linear-gradient(90deg, #010101, #0c141c);
   font-family: Helvetica;
   color: #e6e6e6;
 }
@@ -9,4 +9,5 @@ div {
 }
 div.container {
   background-color: #1c1c1c;
+  
 }
